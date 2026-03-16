@@ -1,0 +1,82 @@
+# ─────────────────────────────────────────────
+# HelpDesk Pro — Docker Compose
+# Runs frontend + backend + PostgreSQL together
+#
+# Usage:
+#   docker-compose up -d
+#   docker-compose exec backend php artisan migrate --seed
+#   Open http://localhost:3000
+# ─────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+  # ── PostgreSQL ────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: helpdesk_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: helpdesk_pro
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: helpdeskpro123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Laravel API ───────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: helpdesk_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: "HelpDesk Pro"
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: helpdesk_pro
+      DB_USERNAME: postgres
+      DB_PASSWORD: helpdeskpro123
+      FRONTEND_URL: http://localhost:3000
+      SANCTUM_STATEFUL_DOMAINS: "localhost:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/var/www/html
+      - /var/www/html/vendor
+
+  # ── Next.js Frontend ──────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: helpdesk_web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+      NEXT_PUBLIC_APP_NAME: "HelpDesk Pro"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  postgres_data:

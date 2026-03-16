@@ -1,0 +1,39 @@
+# ─────────────────────────────────────────────
+# HelpDesk Pro — .gitignore
+# ─────────────────────────────────────────────
+
+# ── Frontend ──────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/out/
+frontend/build/
+
+# ── Backend ───────────────────────────────────
+backend/vendor/
+backend/.env
+backend/storage/logs/*.log
+backend/storage/app/public/
+backend/bootstrap/cache/*.php
+
+# ── OS ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ── IDEs ──────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ── Docker ────────────────────────────────────
+postgres_data/
+
+# ── Misc ──────────────────────────────────────
+*.log
+*.cache
+.turbo/
