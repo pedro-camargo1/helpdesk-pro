@@ -248,14 +248,6 @@ php artisan serve
 
 ---
 
-## 📸 Screenshots
-
-| Landing Page | Dashboard | Tickets |
-|---|---|---|
-| Hero section moderna | Métricas e gráficos | Lista com filtros |
-
----
-
 ## 🎨 Design System
 
 - **Cores**: Paleta azul-slate com acento em indigo
